@@ -1,24 +1,30 @@
 require_relative './part_1_solution.rb'
 
 def apply_coupons(cart, coupons)
+  hash = cart
+  coupons.each do |coupon_hash|
+    # add coupon to cart
+    item = coupon_hash[:item]
 
-  coupons.each do |coupon|
-    coupon.each do |attribute, value|
-      name = coupon[:item]
+    if !hash[item].nil? && hash[item][:count] >= coupon_hash[:num]
+      temp = {"#{item} W/COUPON" => {
+        :price => coupon_hash[:cost],
+        :clearance => hash[item][:clearance],
+        :count => 1
+        }
+      }
 
-      if cart[name] && cart[name][:count] >= coupon[:num]
-        if cart["#{name} W/COUPON"]
-          cart["#{name} W/COUPON"][:count] += 1
-        else
-          cart["#{name} W/COUPON"] = {:price => coupon[:cost],
-          :clearance => cart[name][:clearance], :count => 1}
-        end
+      if hash["#{item} W/COUPON"].nil?
+        hash.merge!(temp)
+      else
+        hash["#{item} W/COUPON"][:count] += 1
+        #hash["#{item} W/COUPON"][:price] += coupon_hash[:cost]
+      end
 
-      cart[name][:count] -= coupon[:num]
+      hash[item][:count] -= coupon_hash[:num]
     end
   end
-end
-  cart
+  hash
 end
 
 def apply_clearance(cart)
